@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Question</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        /* 🔵 Navbar */
+        .navbar {
+            background-color: #0d5766;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .menu a:hover {
+            text-decoration: underline;
+        }
+
+        /* 📦 Form Container */
+        .container {
+            width: 50%;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        /* 🔘 Button */
+        .submit-btn {
+            margin-top: 35px;
+            width: 200px;
+            padding: 10px;
+            background-color: #001f3f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">Quiz App</div>
+    <div class="menu">
+        <!-- ✅ MVC ROUTES -->
+        <a href="/dashboard">Dashboard</a>
+        <a href="/create_test">Create Test</a>
+        <a href="/view_result">View Results</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</div>
+
+<!-- 🧾 Form -->
+<div class="container">
+    <form action="/saveQuestion" method="post">
+
+        <!-- Hidden Quiz ID -->
+        <input type="hidden" id="quizId" name="quizId">
+
+        <label>Question Title</label>
+        <input type="text" name="question" placeholder="Question Text" required>
+
+        <label>Option A</label>
+        <input type="text" name="optionA" placeholder="Option A" required>
+
+        <label>Option B</label>
+        <input type="text" name="optionB" placeholder="Option B" required>
+
+        <label>Option C</label>
+        <input type="text" name="optionC" placeholder="Option C" required>
+
+        <label>Option D</label>
+        <input type="text" name="optionD" placeholder="Option D" required>
+
+        <label>Correct Option</label>
+        <input type="text" name="correctAnswer" placeholder="Correct Option (A/B/C/D)" required>
+
+        <button type="submit" class="submit-btn">Submit</button>
+    </form>
+</div>
+
+<script>
+    // ✅ Logout
+    function logout() {
+        window.location.href = "/login";
+    }
+
+    // ✅ Get quizId from URL
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("quizId").value = params.get("quizId");
+</script>
+
+</body>
+</html>

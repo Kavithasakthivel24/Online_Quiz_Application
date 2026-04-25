@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f2f5f9;
+      margin: 0;
+    }
+
+    .navbar {
+      background-color: #0d3b66;
+      color: white;
+      padding: 15px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .menu a {
+      color: white;
+      margin-left: 20px;
+      text-decoration: none;
+    }
+
+    .timer-box {
+      width: 250px;
+      margin: 30px auto;
+      text-align: center;
+      border: 2px solid #4da6ff;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 18px;
+      color: #0d3b66;
+      background-color: white;
+    }
+
+    .quiz-container {
+      width: 70%;
+      margin: auto;
+    }
+
+    .question-box {
+      background-color: white;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      box-shadow: 0px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .submit-box {
+      text-align: center;
+      margin: 30px;
+    }
+
+    .submit-box button {
+      background-color: #0d3b66;
+      color: white;
+      padding: 10px 25px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .submit-box button:disabled {
+      background-color: gray;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+  <div class="logo">Quiz App</div>
+  <div class="menu">
+    <a href="/user_dashboard">Dashboard</a>
+    <a href="/view-result">View Results</a>
+    <a href="/login">Logout</a>
+  </div>
+</div>
+
+<!-- Timer -->
+<div class="timer-box">
+  Time remaining: <span id="time">Loading...</span>
+</div>
+
+<!-- Quiz -->
+<div class="quiz-container" id="quizContainer"></div>
+
+<div class="submit-box">
+  <button id="submitBtn" onclick="submitQuiz()">Submit Quiz</button>
+</div>
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+const quizId = urlParams.get("quizId");
+
+let questionsData = [];
+let time = 0;
+let submitted = false;
+
+// 🔥 LOAD QUESTIONS
+fetch(`/api/questions?quizId=${quizId}`)
+  .then(res => res.json())
+  .then(data => {
+
+    questionsData = data.questions;
+    time = data.duration;
+
+    loadQuestions();
+    startTimer();
+  });
+
+// 🔥 LOAD QUESTIONS UI
+function loadQuestions() {
+  const container = document.getElementById("quizContainer");
+
+  questionsData.forEach((q, index) => {
+    container.innerHTML += `
+      <div class="question-box">
+        <h3>${index + 1}. ${q.question}</h3>
+
+        <label><input type="radio" name="q${q.id}" value="A"> ${q.optionA}</label>
+        <label><input type="radio" name="q${q.id}" value="B"> ${q.optionB}</label>
+        <label><input type="radio" name="q${q.id}" value="C"> ${q.optionC}</label>
+        <label><input type="radio" name="q${q.id}" value="D"> ${q.optionD}</label>
+      </div>
+    `;
+  });
+}
+
+// 🔥 TIMER
+function startTimer() {
+  let timer = setInterval(() => {
+
+    let minutes = Math.floor(time / 60);
+    let seconds = time % 60;
+
+    document.getElementById("time").innerText =
+      `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (time <= 0) {
+      clearInterval(timer);
+      alert("⏰ Time's up! Auto submitting...");
+      submitQuiz();
+    }
+
+    time--;
+
+  }, 1000);
+}
+
+// 🔥 SUBMIT QUIZ
+function submitQuiz() {
+
+  if (submitted) return; // prevent double submit
+
+  const answers = {};
+  let attempted = 0;
+
+  questionsData.forEach(q => {
+    const selected = document.querySelector(`input[name="q${q.id}"]:checked`);
+
+    if (selected) {
+      answers["q" + q.id] = selected.value;
+      attempted++;
+    }
+  });
+
+  // 🔥 VALIDATION
+  if (attempted === 0) {
+    alert("⚠️ Please answer at least one question!");
+    return;
+  }
+
+  let confirmSubmit = confirm("Are you sure you want to submit?");
+  if (!confirmSubmit) return;
+
+  submitted = true;
+  document.getElementById("submitBtn").disabled = true;
+
+  fetch("/submitQuiz", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      quizId: quizId,
+      answers: answers
+    })
+  })
+  .then(res => res.text())
+  .then(msg => {
+    alert("✅ Quiz submitted successfully!");
+    window.location.href = "/user_viewresult";
+  });
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Test</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .navbar {
+            background-color: #0d5766;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .menu a.active {
+            background: #001f3f;
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .container {
+            width: 50%;
+            margin: 60px auto;
+            background: white;
+            padding: 30px;
+            padding-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        .submit-btn {
+            margin-top: 30px;
+            width: 200px;
+            padding: 10px;
+            background-color: #001f3f;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
+
+        .success-msg {
+            color: green;
+            margin-top: 15px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <div class="logo">Quiz App</div>
+    <div class="menu">
+        <!-- ✅ MVC ROUTES -->
+        <a href="/dashboard">Dashboard</a>
+        <a href="/create_test" class="active">Create Test</a>
+        <a href="/view_result">View Results</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <form id="quizForm" action="/saveQuiz" method="post">
+
+        <label>Title</label>
+        <input type="text" name="title" placeholder="Title" required>
+
+        <label>Time Per Question</label>
+        <input type="number" name="timePerQuestion" placeholder="Time Seconds Per Question" required>
+
+        <label>Description</label>
+        <textarea name="description" placeholder="Description" required></textarea>
+
+        <button type="submit" class="submit-btn">Submit</button>
+
+    </form>
+
+    <p class="success-msg" id="successMsg">Quiz created successfully! Redirecting...</p>
+
+</div>
+
+<script>
+
+// ✅ Logout (MVC)
+function logout() {
+    window.location.href = "/login";
+}
+
+// ✅ Show success message before redirect
+document.getElementById("quizForm").addEventListener("submit", function () {
+    document.getElementById("successMsg").style.display = "block";
+});
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        .navbar {
+            background-color: #0d2c54;
+            color: white;
+            padding: 15px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .nav-links a.active,
+        .nav-links a:hover {
+            background-color: #1e3d73;
+        }
+
+        .container {
+            padding: 30px 60px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .btn {
+            float: right;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #217dbb;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Navbar -->
+<div class="navbar">
+    <h2>Quiz App</h2>
+    <div class="nav-links">
+        <a href="/user_dashboard" class="active">Dashboard</a>
+        <a href="/view-result">View Results</a>
+        <a href="/login">Logout</a>
+    </div>
+</div>
+
+<!-- Dashboard Content -->
+<div class="container" id="quizContainer">
+    <!-- Dynamic quiz cards -->
+</div>
+
+<script>
+
+async function loadQuizzes() {
+    try {
+        let response = await fetch("/api/quiz/all");
+        let data = await response.json();
+
+        let container = document.getElementById("quizContainer");
+        container.innerHTML = "";
+
+        if (data.length === 0) {
+            container.innerHTML = "<p>No quizzes available</p>";
+            return;
+        }
+
+        data.forEach(quiz => {
+
+            // total time = duration * number of questions
+            let totalSeconds = quiz.duration * quiz.questionCount;
+
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+
+            container.innerHTML += `
+                <div class="card">
+                    <h2>${quiz.title}</h2>
+                    <p><b>Time:</b> ${minutes} min ${seconds} sec</p>
+                    <p><b>Description:</b> ${quiz.description}</p>
+
+                    <button class="btn" onclick="startTest(${quiz.id})">
+                        Start Test
+                    </button>
+
+                    <div class="clearfix"></div>
+                </div>
+            `;
+        });
+
+    } catch (error) {
+        console.error("Error loading quizzes:", error);
+    }
+}
+
+// 🔥 FIXED FUNCTION
+function startTest(id) {
+    // must match your controller: @GetMapping("/quiz")
+	window.location.href = "/start-test?quizId=" + id;
+}
+
+// Load quizzes when page opens
+loadQuizzes();
+
+</script>
+
+</body>
+</html>

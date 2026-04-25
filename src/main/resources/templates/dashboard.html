@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz Dashboard</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        /* 🔵 Navbar */
+        .navbar {
+            background-color: #0d3b66;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 30px;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .menu a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 14px;
+        }
+
+        .menu a:hover {
+            text-decoration: underline;
+        }
+
+        /* 📦 Container */
+        .container {
+            width: 80%;
+            margin: 30px auto;
+        }
+
+        /* 🧾 Card */
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-top: 0;
+        }
+
+        /* 🔘 Buttons */
+        .buttons {
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .add {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .view {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<!-- 🔵 Navbar -->
+<div class="navbar">
+    <div class="logo">Quiz App</div>
+    <div class="menu">
+        <!-- ✅ MVC ROUTES -->
+        <a href="/dashboard">Dashboard</a>
+        <a href="/create_test">Create Test</a>
+        <a href="/view_result">View Results</a>
+        <a href="#" onclick="logout()">Logout</a>
+    </div>
+</div>
+
+<!-- 🧾 Dashboard Content -->
+<div class="container" id="quizContainer">
+    <!-- Dynamic cards will load here -->
+</div>
+
+<script>
+
+// ✅ Logout (session-based)
+function logout() {
+    window.location.href = "/login";
+}
+
+// ✅ Load quizzes from backend
+async function loadQuizzes() {
+    try {
+        let response = await fetch("/api/quiz/all");
+        let data = await response.json();
+
+        let container = document.getElementById("quizContainer");
+        container.innerHTML = "";
+
+        data.forEach(quiz => {
+
+            let totalSeconds = quiz.duration * quiz.questionCount;
+            let minutes = Math.floor(totalSeconds / 60);
+            let seconds = totalSeconds % 60;
+
+            container.innerHTML += `
+                <div class="card">
+                    <h2>${quiz.title}</h2>
+                    <p><b>Time:</b> ${minutes} min ${seconds} sec</p>
+                    <p><b>Description:</b> ${quiz.description}</p>
+
+                    <div class="buttons">
+                        <button class="btn add" onclick="addQuestion(${quiz.id})">
+                            Add Question
+                        </button>
+                        <button class="btn view" onclick="viewQuiz(${quiz.id})">
+                            View Test
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+
+    } catch (error) {
+        console.error("Error loading quizzes:", error);
+        document.getElementById("quizContainer").innerHTML =
+            "<p>Failed to load quizzes. Please try again.</p>";
+    }
+}
+
+// ✅ MVC navigation (IMPORTANT FIX)
+function addQuestion(id) {
+    window.location.href = "/add-question?quizId=" + id;
+}
+
+function viewQuiz(id) {
+    window.location.href = "/quiz?quizId=" + id;
+}
+
+// Load data
+loadQuizzes();
+
+</script>
+
+</body>
+</html>

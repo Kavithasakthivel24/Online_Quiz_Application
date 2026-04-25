@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>User Results</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial;
+        background: #f4f6f9;
+    }
+
+    .navbar {
+        background: #0d3b66;
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .menu a {
+        color: white;
+        margin-left: 20px;
+        text-decoration: none;
+    }
+
+    .container {
+        padding: 30px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+        padding: 15px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background: #f1f1f1;
+    }
+
+    .no-data {
+        text-align: center;
+        padding: 20px;
+        color: gray;
+    }
+
+    .progress {
+        height: 10px;
+        background: #eee;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 10px;
+        background: #4caf50;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Quiz App</h2>
+    <div class="menu">
+        <a href="/user_dashboard">Dashboard</a>
+        <a href="/user_viewresult">View Results</a>
+        <a href="/login">Logout</a>
+    </div>
+</div>
+
+<div class="container">
+
+    <h2>Your Results</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Quiz</th>
+                <th>Total</th>
+                <th>Score</th>
+                <th>Percentage</th>
+            </tr>
+        </thead>
+
+        <tbody id="resultTable"></tbody>
+    </table>
+
+</div>
+
+<script>
+
+fetch("/api/results")
+.then(res => res.json())
+.then(data => {
+
+    const table = document.getElementById("resultTable");
+    table.innerHTML = "";
+
+    if (data.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="4" class="no-data">
+                    No results found. Take a test!
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    data.forEach(r => {
+
+        let percent = Math.round((r.score / r.total) * 100);
+
+        table.innerHTML += `
+            <tr>
+                <td>${r.quiz.title}</td>
+                <td>${r.total}</td>
+                <td>${r.score}</td>
+                <td>
+                    ${percent}%
+                    <div class="progress">
+                        <div class="progress-bar" style="width:${percent}%"></div>
+                    </div>
+                </td>
+            </tr>
+        `;
+    });
+
+})
+.catch(err => console.error(err));
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>View Test</title>
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial;
+        background: #f4f6f9;
+    }
+
+    /* 🔵 Navbar */
+    .navbar {
+        background: #0d3b66;
+        color: white;
+        padding: 10px 30px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .nav-links a {
+        color: white;
+        text-decoration: none;
+        margin-left: 20px;
+        padding: 6px 12px;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .nav-links a:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    /* 📦 Container */
+    .container {
+        width: 70%;
+        margin: 30px auto;
+    }
+
+    /* 📄 Question Card */
+    .question-card {
+        background: white;
+        padding: 20px;
+        margin-bottom: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .question-card p {
+        margin: 8px 0;
+    }
+
+    .correct {
+        color: green;
+        font-weight: bold;
+    }
+
+</style>
+</head>
+
+<body>
+
+<!-- 🔵 Navbar -->
+<div class="navbar">
+    <h2>Quiz App</h2>
+    <div class="nav-links">
+        <a href="/dashboard">Dashboard</a>
+        <a href="/create_test">Create Test</a>
+        <a href="/view_result">View Results</a>
+        <a href="/logout">Logout</a>
+    </div>
+</div>
+
+<!-- 📦 Content -->
+<div class="container">
+    <h2>View Questions</h2>
+    <div id="questionsContainer"></div>
+</div>
+
+<script>
+
+// 🔥 Get quizId from URL
+const params = new URLSearchParams(window.location.search);
+const quizId = params.get("quizId");
+
+// ✅ Load Questions
+async function loadQuestions() {
+    try {
+        let res = await fetch("/api/question/byQuiz/" + quizId);
+        let questions = await res.json();
+
+        let container = document.getElementById("questionsContainer");
+        container.innerHTML = "";
+
+        if (questions.length === 0) {
+            container.innerHTML = "<p>No questions added yet.</p>";
+            return;
+        }
+
+        questions.forEach((q, index) => {
+            container.innerHTML += `
+                <div class="question-card">
+                    <p><b>Q${index + 1}. ${q.question}</b></p>
+
+                    <p>A) ${q.optionA}</p>
+                    <p>B) ${q.optionB}</p>
+                    <p>C) ${q.optionC}</p>
+                    <p>D) ${q.optionD}</p>
+
+                    
+                </div>
+            `;
+        });
+
+    } catch (error) {
+        console.error("Error loading questions:", error);
+    }
+}
+
+// Load questions on page load
+loadQuestions();
+
+</script>
+
+</body>
+</html>
