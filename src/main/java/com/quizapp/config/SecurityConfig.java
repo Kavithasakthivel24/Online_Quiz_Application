@@ -37,6 +37,7 @@ public class SecurityConfig {
 	                 "/dashboard",
 	                 "/create_test",   
 	                 "/view_result",
+	                 "/view-result",
 	                 "/saveQuiz",
 	                 "/api/**",
 	                 "/add-question",
